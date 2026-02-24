@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
-import { UserModel, IUser } from './user.js';
-import { OrganizationModel, IOrganization } from './organization.js';
+import { UserModel, IUser } from './models/user.js';
+import { OrganizationModel, IOrganization } from './models/organization.js';
+import { IProject, ProjectModel } from './models/project.js';
+import { createProject } from './projectService.js';
 
 async function runDemo() {
   try {
@@ -13,6 +15,7 @@ async function runDemo() {
     console.log('🧹 Cleaning database...');
     await UserModel.deleteMany({});
     await OrganizationModel.deleteMany({});
+    await ProjectModel.deleteMany({});
 
     // --- 3. SEEDING (The missing part) ---
     console.log('🌱 Seeding data...');
@@ -25,7 +28,16 @@ async function runDemo() {
     
     // We map existing IDs to link them dynamically
     const initechId = orgs[0]._id;
-    const umbrellaId = orgs[1]._id;
+    const umbrellaId = orgs[1]._id; 
+
+    //
+    const proj = {
+      title: "Hola",
+      description: "Que",
+      organization: initechId
+    };
+    await createProject(proj);
+    //
 
     // 3.2 Create Users linked to Orgs
     // Manual referencial integrity: We use the actual _id from the created organizations to ensure valid references.
